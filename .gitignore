@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.vite/
+.netlify/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.local
+
+# Large source CSVs — too large for git, download separately (see data/README.md)
+data/raw/gf_imr.csv
+data/raw/bilat_mig.csv
+
+# Pipeline intermediates — regenerable
+data/intermediate/
+
+# Python venv and cache
+data/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Other package managers
+yarn.lock
+pnpm-lock.yaml
