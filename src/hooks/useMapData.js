@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { HISTORICAL_TO_MODERN, MODERN_TO_HISTORICAL } from "../data/constants";
+import { HISTORICAL_TO_MODERN, MODERN_TO_HISTORICAL } from "../dataset/constants";
 
 /*
   Migration JSON shape (post-cleanup):
@@ -21,15 +21,15 @@ export default function useMapData(intervalMode, selectedPeriods, selected) {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    import("../data/migrationData_5yr.json")
+    import("../dataset/migrationData_5yr.json")
       .then(m => setMig5(m.default || m))
       .catch(() => {});
 
-    import("../data/migrationData_10yr.json")
+    import("../dataset/migrationData_10yr.json")
       .then(m => setMig10(m.default || m))
       .catch(() => {});
 
-    import("../data/chartData.json")
+    import("../dataset/chartData.json")
       .then(c => setChartData(c.default || c))
       .catch(() => {});
   }, []);

@@ -1,13 +1,12 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { CODE_TO_NAME } from "../data/constants";
-import { getFlagEmoji, getName } from "../utils/formatters";
+import { CODE_TO_NAME } from "../dataset/constants.js";
+import { getFlagEmoji, getName } from "../utils/formatters.js";
 
 /*
   Top-level country search.
 
-  Renders an input + dropdown overlay. When the user picks a country,
-  `onSelect(iso3)` fires — WorldMap handles the actual selection,
-  panel-open, and pan/zoom-to-country side effects.
+  Rendering an input and a dropdown overlay. When the user picks a country,
+  onSelect(iso3) fires and WorldMap handles the actual selection, panel-open, and pan/zoom-to-country side effects
 
   Keyboard:
     - ArrowDown / ArrowUp move the highlighted match
@@ -21,8 +20,7 @@ export default function CountrySearchBar({ onSelect, panelOpen }) {
   const rootRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Sorted list of all (ISO3, name) pairs. Excludes non-3-letter codes
-  // and any ISO codes that have no display name resolved through getName.
+  // Sorted list of all (ISO3, name) pairs. Excludes non-3-letter codes and any ISO codes that have no display name resolved through getName
   const allCountries = useMemo(() => {
     return Object.keys(CODE_TO_NAME)
       .filter(c => c.length === 3)
@@ -31,8 +29,7 @@ export default function CountrySearchBar({ onSelect, panelOpen }) {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
-  // Filter to top 8 matches by case-insensitive substring on either the
-  // English name or the country code itself.
+  // Filter to top 8 matches by case-insensitive substring on either the name or the country code itself
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
@@ -46,14 +43,14 @@ export default function CountrySearchBar({ onSelect, panelOpen }) {
         contains.push(c);
       }
     }
-    // Prefer name-start matches, then substring matches.
+    // Prefers name-start matches over substring matches
     return [...starts, ...contains].slice(0, 8);
   }, [query, allCountries]);
 
-  // Reset the highlighted row whenever the match list changes.
+  // Reset the highlighted row whenever the match list changes
   useEffect(() => { setActiveIdx(0); }, [query]);
 
-  // Click outside the search to close the dropdown.
+  // Click outside the search to close the dropdown
   useEffect(() => {
     if (!open) return;
     const onDoc = e => {
@@ -97,8 +94,7 @@ export default function CountrySearchBar({ onSelect, panelOpen }) {
 
   // Position the bar at top-center of the map. When the right-side panel
   // is open, shift the box leftward by half the panel width so the search
-  // stays centered on the visible map area rather than the full viewport.
-  // (Panel is 430px wide.)
+  // stays centered on the visible map area rather than the full viewport
   const horizontalShift = panelOpen ? -215 : 0;
 
   return (
@@ -117,8 +113,8 @@ export default function CountrySearchBar({ onSelect, panelOpen }) {
         zIndex: 6
       }}
     >
+      {/* Magnifying glass icon */}
       <div style={{ position: "relative" }}>
-        {/* Magnifying glass icon */}
         <svg
           width="14"
           height="14"

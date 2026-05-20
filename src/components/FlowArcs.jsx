@@ -3,18 +3,16 @@ import { formatNum, getName } from "../utils/formatters";
 
 /*
   Renders the top-5 immigration or emigration flows for the selected country
-  as curved arrows on the map. Sits inside a React overlay <svg> that mirrors
-  the d3 zoom transform.
+  as curved arrows on the map
 
-  Props:
-    selected     - ISO3 of the focused country
-    direction    - "in" | "out"
-    mData        - aggregated migration data: {ti, to, ai: {code:v}, ao: {code:v}}
-    projection   - d3 geo projection currently in use
-    centroids    - { iso3: [lng, lat] } precomputed in WorldMap
-    visible      - hide arcs when panel is closed or not on the migration tab
-    showLabels   - when true, show every label permanently (full country name + count);
-                   when false, labels appear on hover only (count only)
+  
+  selected - ISO3 of the focused country
+  direction - can be "in" or "out"
+  mData - aggregated migration data: {ti, to, ai: {code:v}, ao: {code:v}}
+  projection - d3 geo projection is used
+  centroids - { iso3: [lng, lat] } precomputed in WorldMap
+  visible - hide arcs when panel is closed or not on the migration tab
+  showLabels - When true, it show every label permanently (full country name + count). When false, the labels appear on hover only (count only)
 */
 
 const ARC_COLOR = { in: "#5a8a6a", out: "#c2703e" };
@@ -35,7 +33,7 @@ function buildArc(a, b, curvature = 0.22) {
   const dx = bx - ax;
   const dy = by - ay;
   const len = Math.hypot(dx, dy) || 1;
-  // sign of curvature is preserved so arcs can bend either way
+  // sign of curvature is preserved, so arcs can bend either way
   const px = -dy / len;
   const py = dx / len;
   const offset = len * curvature;
@@ -44,9 +42,7 @@ function buildArc(a, b, curvature = 0.22) {
   return { d: `M${ax},${ay} Q${cx},${cy} ${bx},${by}`, cx, cy, len };
 }
 
-// Signed curvatures for the top-5 arcs — fans them into a visible spread
-// instead of stacking them on top of each other when multiple corridors
-// share similar origin–destination geometry.
+// Signed curvatures for the top-5 arcs. This is done so that the curves do not stack onto each other when multiple corridors have similar origin-destination
 const CURVATURES = [-0.35, -0.15, 0.1, 0.3, 0.5];
 
 function shortenEnd(a, b, shrink = 4) {
@@ -59,7 +55,6 @@ function shortenEnd(a, b, shrink = 4) {
 }
 
 // Approximate rendered width of a text string at ~10px bold Source Sans 3.
-// A couple pixels of slack is fine — the rect just hosts the text.
 function estimateTextWidth(text) {
   return text.length * 6.3;
 }
@@ -132,7 +127,7 @@ export default function FlowArcs({
         </marker>
       </defs>
 
-      {/* halo under arcs for legibility — fades with the arc on hover */}
+      {/* Halo under arcs for legibility. Fades with the arc on hover */}
       {drawOrder.map(a => (
         <path
           key={`halo-${a.code}`}
@@ -178,7 +173,7 @@ export default function FlowArcs({
         />
       ))}
 
-      {/* invisible fat hover targets — let people aim at the arc comfortably */}
+      {/* Invisible fat hover targets, letting people aim at the arc comfortably */}
       {arcs.map(a => (
         <path
           key={`hit-${a.code}`}
@@ -193,7 +188,7 @@ export default function FlowArcs({
         />
       ))}
 
-      {/* labels — hover-only by default, or always when showLabels is on.
+      {/* Labels are hover-only by default, or always when showLabels is on.
           Hovered arc renders last so its label can't be hidden behind others. */}
       {drawOrder.map(a => {
         if (!labelShownFor(a.code)) return null;

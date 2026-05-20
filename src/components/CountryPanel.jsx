@@ -1,13 +1,12 @@
 import { useState, useMemo } from "react";
-import { CONTINENTS, CODE_TO_CONTINENT } from "../data/constants";
-import { formatNum, getFlagEmoji, getName } from "../utils/formatters";
+import { CONTINENTS, CODE_TO_CONTINENT } from "../dataset/constants.js";
+import { formatNum, getFlagEmoji, getName } from "../utils/formatters.js";
 import LineChart from "./LineChart";
 import MigrationList from "./MigrationList";
 import CountrySearch from "./CountrySearch";
 
-// Format a stat-card value. Pre-existing formatNum is used for unitless
-// counts (population, migration). Percentages and years get their own
-// short formatting here so the cards render consistently.
+// Formating a stat-card value. Pre-existing formatNum is used for unitless counts (population, migration). Percentages and years get their own
+// short formatting here so the cards are rendered consistently.
 function formatStatValue(value, unit) {
   if (value == null) return null;
   if (unit === "%") return value.toFixed(1) + "%";
@@ -100,27 +99,21 @@ export default function CountryPanel({
     return false;
   }, [confidence, selectedPeriods]);
 
-  // Compute a stat-card value/change pair from chartInfo.
+  //Compute a stat-card value/change pair from chartInfo.
   //
-  // Behaviour by indicator type:
-  //   - Stock indicators (urbanization, median age, population,
-  //     unemployment): the value shown is the most recent year inside
-  //     the selected periods. These represent a state at a point in
-  //     time, so summing them would be meaningless.
-  //   - Flow indicator (netMigration): the value shown is the SUM of
-  //     all annual values across all selected periods, since net
+  //Behaviour by indicator type:
+  //   1) Stock indicators like urbanization, median age, population, unemployment have their values shown in the most recent year inside
+  //     the selected periods. These represent a state at a point in time, so summing them would be meaningless.
+  //   2) Flow indicator (netMigration): the value shown is the sum of  all annual values across all selected periods, since net
   //     migration is a quantity that accumulates year over year.
-  //     The change arrow is suppressed (a sum can be negative or cross
-  //     zero, so a percent change isn't well-defined).
+  //     The change arrow is suppressed (a sum can be negative or cross zero, so a percent change isn't well-defined).
   //
-  // For both, the change percentage compares the earliest in-period
-  // value with the latest, expressed relative to the earliest value.
+  //For both, the change percentage compares the earliest in-period value with the latest, expressed relative to the earliest value.
   function metricInfo(metric) {
     if (!chartInfo?.[metric]) return { value: null, change: null };
     const step = intervalMode === "10yr" ? 10 : 5;
 
     // All years inside any selected period (annual resolution).
-    // Endpoints are inclusive so 5-year period "2000" covers 2000..2005.
     const years = new Set();
     for (const p of selectedPeriods) {
       const start = +p;
@@ -134,9 +127,9 @@ export default function CountryPanel({
 
     if (metric === "netMigration") {
       // Sum across all years that fall inside any selected period.
-      // When adjacent periods share an endpoint (e.g. 2000 + 2005 both
-      // touch 2005), the shared year would be counted once because the
-      // `years` Set deduplicates it. That's the right behaviour: the
+      // When adjacent periods share an endpoint like 2000 + 2005 both
+      // touch 2005. The shared year would be counted once because the
+      // "years" Set deduplicates it. That's the right behaviour: the
       // year 2005 only happened once.
       const total = withData.reduce((acc, y) => acc + chartInfo[metric][y], 0);
       return { value: total, change: null };

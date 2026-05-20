@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import * as d3 from "d3";
-import { HISTORICAL_TO_MODERN } from "../data/constants";
+import { HISTORICAL_TO_MODERN } from "../dataset/constants";
 
 /*
   Computes a { [iso3]: colorString } map for every country based on the

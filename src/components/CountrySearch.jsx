@@ -1,13 +1,12 @@
 import { useState, useMemo, useLayoutEffect } from "react";
-import { CODE_TO_NAME } from "../data/constants";
-import { formatNum, getName } from "../utils/formatters";
+import { CODE_TO_NAME } from "../dataset/constants.js";
+import { formatNum, getName } from "../utils/formatters.js";
 
 const CONF_INFO = {
-  high_confidence: null, // no badge shown for high confidence
+  high_confidence: null, // no mark for high confidence
   moderate_confidence: { color: "#e0a020", label: "Moderate confidence — some disagreement among retained estimates", icon: "●" },
   low_confidence: { color: "#c44e52", label: "Low confidence — broad disagreement among retained estimates", icon: "●" },
-  insufficient_evidence: { color: "#737a85", label: "Insufficient evidence — too few retained values above threshold", icon: "?" },
-};
+  insufficient_evidence: { color: "#737a85", label: "Insufficient evidence — too few retained values above threshold", icon: "?" }};
 
 function getWorstConfidence(levels) {
   if (!levels.length) return null;
@@ -16,13 +15,11 @@ function getWorstConfidence(levels) {
     high_confidence: 1,
     moderate_confidence: 2,
     low_confidence: 3,
-    insufficient_evidence: 4,
-  };
+    insufficient_evidence: 4,};
 
   return [...levels].sort((a, b) => (rank[b] || 0) - (rank[a] || 0))[0];
 }
 
-// Short, one-word names matching the badge labels.
 const SHORT_LABEL = {
   high_confidence: "high confidence",
   moderate_confidence: "moderate confidence",
@@ -30,12 +27,9 @@ const SHORT_LABEL = {
   insufficient_evidence: "insufficient evidence",
 };
 
-// Build the hover tooltip for a confidence badge. Mirrors the logic in
-// MigrationList.jsx — see that file for full documentation. In short:
-// when multiple periods are selected and they don't all share the same
-// label, the tooltip leads with the worst-case label and the periods
-// that produced it, then lists the other labels for the remaining
-// periods so the user knows the worst label only applies to a subset.
+// Building the hover tooltip for a confidence badge. Mirrors the logic in MigrationList.jsx
+// Basically, when multiple periods are selected and they don't all share the same label, the tooltip leads with the worst-case label and the periods that produced it.
+// Then it is listing the other labels for the remaining periods so the user knows the worst label only applies to a subset.
 function buildConfidenceTitle(confidence, origin, destination, worstLabelLong, worstLabelKey, selectedPeriods) {
   const key = `${origin}-${destination}`;
   const periods = selectedPeriods ? [...selectedPeriods].sort((a, b) => +a - +b) : [];
@@ -78,7 +72,7 @@ export default function CountrySearch({
   const [query, setQuery] = useState("");
   const [picked, setPicked] = useState(null);
 
-  // Tour-driven demonstration: when `demoPick` is set, pre-select that
+  // Tour-driven demonstration: when "demoPick" is set, pre-select that
   // country so the tour can spotlight the resulting bilateral flow card.
   useLayoutEffect(() => {
     if (demoPick) {
@@ -153,8 +147,6 @@ export default function CountrySearch({
       </div>
 
       <div data-tour-id="bilateral-search" style={{ position: "relative" }}>
-        {/* Magnifying-glass icon — matches the top-level country search
-            so the two inputs look like part of the same family. */}
         <svg
           width="13"
           height="13"

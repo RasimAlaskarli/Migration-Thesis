@@ -1,4 +1,4 @@
-import { CODE_TO_NAME } from '../data/constants';
+import { CODE_TO_NAME } from '../dataset/constants.js';
 
 const ISO3_TO_ISO2 = {
   ABW: "AW", AFG: "AF", AGO: "AO", AIA: "AI", ALA: "AX", ALB: "AL", AND: "AD",

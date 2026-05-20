@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import * as d3 from "d3";
 
-import { PERIODS_5YR, PERIODS_10YR, NUM_TO_ISO3, TOPO_URL } from "../data/constants";
+import { PERIODS_5YR, PERIODS_10YR, NUM_TO_ISO3, TOPO_URL } from "../dataset/constants.js";
 import { getName } from "../utils/formatters";
 
 import useMapData from "../hooks/useMapData";
@@ -15,8 +15,7 @@ import PreferencesMenu from "./PreferencesMenu";
 import Tour from "./Tour";
 import { ZoomControls, PeriodSelector, ChoroplethSelector, HoverTooltip, ClickHint } from "./MapControls";
 
-// Config for the Display preferences popover. Add an entry here to
-// expose a new toggle; the menu renders from this list.
+// Config for the Display preferences popover. Add an entry here to expose a new toggle
 const PREF_ITEMS = [
   {
     key: "showArrows",
@@ -30,8 +29,8 @@ const PREF_ITEMS = [
   }
 ];
 
-// Demo country for tour steps that need a selected country — Germany has
-// rich migration data across all periods and sits centered on the map.
+// Demo country for tour steps that need a selected country
+// Germany was picked as it has rich migration data across all periods and sits centered on the map
 const TOUR_DEMO_COUNTRY = "DEU";
 
 export default function WorldMap() {
@@ -121,7 +120,7 @@ export default function WorldMap() {
     return s[0] + "–" + (+s[s.length - 1] + step);
   }, [sortedPeriods, intervalMode]);
 
-  // Guided tour steps. Defined inside the component so `before` hooks can
+  // Guided tour steps. Defined inside the component so before hooks can
   // close over state setters and prepare the app state each step needs.
   // The tour card sits at a fixed position — only the spotlights move.
   const tourSteps = useMemo(() => [
@@ -314,10 +313,10 @@ export default function WorldMap() {
     const geo = decode(world, world.objects.countries);
 
     // Compute a centroid (lng, lat) for every country. For MultiPolygon
-    // geometries we use the centroid of the *largest* polygon by area,
-    // not the mean of all polygons — that way France's centroid lands in
+    // geometries we use the centroid of the largest polygon by area,
+    // not the mean of all polygons. Because of this, France's centroid lands in
     // metropolitan France, not drifted toward French Guiana / Réunion.
-    // Same for the US (Alaska/Hawaii), UK (overseas territories), etc.
+    // Same for the US (Alaska/Hawaii) and UK (overseas territories)
     const centroidFromLargestPoly = (feature) => {
       if (!feature.geometry) return null;
       if (feature.geometry.type === "Polygon") {
@@ -382,18 +381,17 @@ export default function WorldMap() {
         d3.select(ev.target).attr("stroke-width", iso === selectedRef.current ? 1.5 : 0.5);
       });
 
-    // scaleExtent caps the zoom range; translateExtent caps how far the
-    // map can be panned. Without translateExtent, the user can drag the
-    // entire globe off-screen — d3 by default allows infinite panning.
-    // The extent is the world rectangle [0, 0] to [mapSize.width, mapSize.height]
-    // matching the SVG canvas; d3 scales this by the current zoom level
-    // automatically so the boundary holds at every zoom level.
+    // scaleExtent caps the zoom range.
+    // translateExtent caps how far the map can be panned. Without translateExtent, the user can drag the entire globe off-screen
+    // D3 by default allows infinite panning.
+    // The extent is the world rectangle [0, 0] to [mapSize.width, mapSize.height] matching the SVG canvas
+    // D3 scales this by the current zoom level automatically so the boundary holds at every zoom level
     const zoom = d3.zoom()
       .scaleExtent([1, 8])
       .translateExtent([[0, 0], [mapSize.width, mapSize.height]])
       .on("zoom", e => {
         g.attr("transform", e.transform);
-        // Keep React-rendered overlays in sync with d3's pan/zoom.
+        // Keep React-rendered overlays in sync with d3's zoom.
         setZoomTransform(e.transform.toString());
       });
     svg.call(zoom);
@@ -401,7 +399,7 @@ export default function WorldMap() {
     setZoomTransform("translate(0,0) scale(1)");
   }, [world, mapSize]);
 
-  // repaint on selection / choropleth change
+  // repaint on selection
   useEffect(() => {
     choroplethRef.current = choroplethColors;
     selectedRef.current = selected;
@@ -428,9 +426,9 @@ export default function WorldMap() {
 
   // Search bar callback: select the country and open the panel.
   // Earlier versions also panned/zoomed the map to the country, but that
-  // was disorienting — losing your current view to chase a small country
-  // is rarely what the user wants. The choropleth shading + panel open
-  // is enough to communicate "here it is."
+  // was disorienting. Losing your current view to chase a small country
+  // is rarely what the user wants. The slight shading and panel opening
+  // is enough to communicate to the user where the country is
   const onSearchSelect = useCallback(iso => {
     setSelected(iso);
     setPanelOpen(true);
@@ -449,7 +447,7 @@ export default function WorldMap() {
 
         {/* React-controlled overlay for migration flow arcs. Mirrors the d3
             zoom transform so arcs pan/zoom with the map. Pointer events off
-            so country clicks still land on the d3 layer below. */}
+            so country clicks still land on the d3 layer below */}
         <svg
           width={mapSize.width}
           height={mapSize.height}
